@@ -72,14 +72,36 @@ class ConfigPC:
            return "não identificado" 
 
     @property
-    def placa_mae(self) -> str:
+    def placa_mae_fabricante(self) -> str:
         try:
             c = wmi.WMI()
             for motherboard in c.Win32_BaseBoard():
-                return str(motherboard.Product)
+                return str((motherboard.Manufacturer))
             raise Exception()
         except:
            return "não identificado" 
+    
+    @property
+    def placa_mae_modelo(self) -> str:
+        try:
+            c = wmi.WMI()
+            for motherboard in c.Win32_BaseBoard():
+                return str((motherboard.Product))
+            raise Exception()
+        except:
+           return "não identificado" 
+ 
+    @property
+    def sockete_processador(self) -> str:
+        try:
+            c = wmi.WMI()
+            for processor in c.Win32_Processor():
+                return str(processor.SocketDesignation)
+            raise Exception()
+        except:
+           return "não identificado" 
+ 
+ 
     
     def space(self) -> dict:
         partitions = psutil.disk_partitions(all=True)
@@ -101,10 +123,11 @@ class ConfigPC:
         }
 
     def __str__(self) -> str:
-        return f"Processador: {self.processador}; Uso Processador: {self.processador_usando}; Memoria Ram: {self.ram_total}; Uso Memoria Ram: {self.ram_usando}; Placa de Video: {self.placa_video}; Armazenamento Total: {self.armazenamento_total}; Armazenamento Disponivel: {self.armazenamento_disponivel}; Sistema Operacional: {self.sistema_operacional}; Placa Mãe: {self.placa_mae}"
+        return f"Processador: {self.processador}; Uso Processador: {self.processador_usando}; Memoria Ram: {self.ram_total}; Uso Memoria Ram: {self.ram_usando}; Placa de Video: {self.placa_video}; Armazenamento Total: {self.armazenamento_total}; Armazenamento Disponivel: {self.armazenamento_disponivel}; Sistema Operacional: {self.sistema_operacional}; Fabricante Placa Mãe: {self.placa_mae_fabricante}; Modelo Placa Mão: {self.placa_mae_modelo}"
 
       
 if __name__ == "__main__":
     bot  = ConfigPC()
     
     print(bot)
+    print(bot.sockete_processador)

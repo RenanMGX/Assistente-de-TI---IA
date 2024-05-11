@@ -2,6 +2,7 @@ import google.generativeai as genai
 from typing import List
 from credenciais import Credential
 from pc_config_collect import ConfigPC
+from time import sleep
 
 class ApiRequest:
     @property
@@ -49,7 +50,7 @@ class ApiRequest:
     
     def __init__(self, *,
                  token:str,
-                 system_instruction:str=f"Você é um Assistente de TI e precisa ajudar o usuario e usuarios leigos, as configurações do computador do usuario é {ConfigPC()}",
+                 system_instruction:str=f"Seu nome é Orion e você é um Assistente de TI e precisa ajudar o usuario e usuarios leigos e voce precisa pesquisar para conseguir uma resposta, as configurações do computador do usuario é '{ConfigPC()}'",
                  temperature:float|int=1,
                  top_p:float|int=0.95,
                  top_k:float|int=0,
@@ -98,6 +99,9 @@ class ApiRequest:
             response = self.chat.send_message(prompt)
             return f"\nAssistente:\n{response.text}\n"
         except Exception as error:
+            if "Resource has been exhausted (e.g. check quota)." in error.args:
+                #sleep(3)
+                return "\n    Muitas perguntas em pouco tempo, espere um pouco e tente novamente!\n "
             return f"um erro ocorreu ao tentar utilzar a api motivo: \n{error.args}"
     
 if __name__ == "__main__":
