@@ -1,6 +1,7 @@
 import google.generativeai as genai
 from typing import List
 from credenciais import Credential
+from pc_config_collect import ConfigPC
 
 class ApiRequest:
     @property
@@ -42,9 +43,13 @@ class ApiRequest:
     def model(self) -> genai.GenerativeModel:
         return self.__model
     
+    @property
+    def chat(self):
+        return self.__chat
+    
     def __init__(self, *,
                  token:str,
-                 system_instruction:str="",
+                 system_instruction:str=f"Você é um Assistente de TI e precisa ajudar o usuario e usuarios leigos, as configurações do computador do usuario é {ConfigPC()}",
                  temperature:float|int=1,
                  top_p:float|int=0.95,
                  top_k:float|int=0,
@@ -76,8 +81,6 @@ class ApiRequest:
         else:
             self.__system_instruction = "Você é um Assistente de TI"
             
-        
-    def question(self, input:str) -> str:
         MODEL_NAME:str = "gemini-1.5-pro-latest"    
         self.__model:genai.GenerativeModel = genai.GenerativeModel(
             model_name=MODEL_NAME,
@@ -85,10 +88,15 @@ class ApiRequest:
             system_instruction=self.system_instruction,
             safety_settings=self.safety_settings
             )
+            
+        self.__chat = self.model.start_chat(history=[])
+            
         
+    def question(self, input:str) -> str:
         try:
-            response = self.model.generate_content(input)
-            return response.text
+            prompt:str = input
+            response = self.chat.send_message(prompt)
+            return f"\nAssistente:\n{response.text}\n"
         except Exception as error:
             return f"um erro ocorreu ao tentar utilzar a api motivo: \n{error.args}"
     
