@@ -5,12 +5,6 @@ import traceback
 from time import sleep
 
 
-lista_exit:List[str] = [
-    "Adeus", "Tchau", "Até logo", "Até mais", "Valeu", "Falou", "Fui", "Abraços", "Beijos",
-    "Adeusinho", "Nos vemos", "Passar bem", "Ate mais tarde", "Sair", "Xau", "Exit"
-]
-lista_exit = [item.lower() for item in lista_exit]
-
 if __name__ == "__main__":
     try:
         crd:dict = Credential("TOKEN_GEMINI").load()
@@ -27,7 +21,7 @@ if __name__ == "__main__":
         bot = ApiRequest(token=crd["password"])
         bot.start()
         
-        print(bot.question("Se apresente para o usuario, apenas uma apresentação sobre voce e nada mais"))
+        print(bot.question("Apresente-se para o usuário sem fornecer informações sobre a máquina, e compartilhe uma interessante sobre um assunto atual."))
         while True:
             entrada:str = input("Digite: ")
             if entrada == "":
@@ -36,10 +30,13 @@ if __name__ == "__main__":
             
             response = bot.question(entrada)
 
-            print(response)
+            print(str(response).replace("--> FIM DO PROGRAMA <--", ""))
             
-            if entrada.lower() in lista_exit:
+            # if entrada.lower() in lista_exit:
+            #     break
+            if "--> FIM DO PROGRAMA <--" in str(response):
                 break
+            
             sleep(2)
     except Exception as error:
         print(traceback.format_exc())
