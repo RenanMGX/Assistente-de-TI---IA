@@ -1,7 +1,9 @@
 import google.generativeai as genai
 from typing import List
-from credenciais import Credential
-from pc_config_collect import ConfigPC
+try:
+    from Entities.pc_config_collect import ConfigPC
+except:
+    from pc_config_collect import ConfigPC
 from time import sleep
 
 class ApiRequest:
@@ -105,6 +107,7 @@ class ApiRequest:
             return f"um erro ocorreu ao tentar utilzar a api motivo: \n{error.args}"
     
 if __name__ == "__main__":
+    from credenciais import Credential
     crd:dict = Credential("TOKEN_GEMINI").load()
     bot = ApiRequest(token=crd["password"], system_instruction=f"versão do sistema operacional do meu computador Windows 10.0.19045")
     
