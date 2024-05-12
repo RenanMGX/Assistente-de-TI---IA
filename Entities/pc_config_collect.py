@@ -157,6 +157,8 @@ class ConfigPC:
         available_space = 0
         # Itera sobre todas as partições
         for partition in partitions:
+            if not (partition.mountpoint == "C:\\"):
+                continue
             try:
                 partition_usage = psutil.disk_usage(partition.mountpoint)
                 total_space += partition_usage.total
@@ -265,5 +267,5 @@ class ConfigPC:
 if __name__ == "__main__":
     bot  = ConfigPC()
     
-    print(bot)
-    print(bot.ip_wam)
+    #print(bot)
+    print(bot.placa_video)

@@ -13,8 +13,6 @@ class Credential:
         if not name.endswith('.json'):
             name += '.json'
         
-        
-        
         temp_path:str
         if "\\" in path:
             if not path.endswith("\\"):
