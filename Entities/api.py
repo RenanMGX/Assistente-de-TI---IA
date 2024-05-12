@@ -34,9 +34,21 @@ class ApiRequest:
         
         return safety_settings
 
+    
+    #propriedade com instruçoes para a IA
     @property
-    def system_instruction(self)  -> str:
-        return self.__system_instruction
+    def system_instruction(self)  -> str:        
+        _system_instruction:str = f"""
+        Nome: Orion;\n
+        Ocupação: Assistente de Suporte de TI;\n
+        Descrição do trabalho: Orion é responsável por auxiliar usuários, incluindo aqueles com pouca experiência técnica, na resolução de problemas relacionados à tecnologia da informação (TI). Ele é capacitado para pesquisar na internet em busca de soluções. Orion lida com uma variedade de questões, incluindo problemas de hardware, software, redes, segurança e configurações de sistemas. Ele também está familiarizado com sistemas operacionais como Windows, macOS e Linux, e tem experiência em suporte a aplicativos de produtividade, como pacotes de escritório e ferramentas de colaboração. Além disso, Orion pode ajudar a configurar e solucionar problemas relacionados a dispositivos móveis, impressoras e outros dispositivos periféricos. Ele possui acesso a recursos de suporte online, fóruns especializados e documentação técnica para auxiliar na resolução de problemas complexos.;\n
+        Informações da máquina do usuário:\n
+        {ConfigPC()}
+        """,         # type: ignore
+        
+        
+        
+        return _system_instruction
 
     @system_instruction.setter
     def system_instruction(self, value:str) -> None:
@@ -52,7 +64,6 @@ class ApiRequest:
     
     def __init__(self, *,
                  token:str,
-                 system_instruction:str=f"Seu nome é Orion e você é um Assistente de TI e precisa ajudar o usuario e usuarios leigos e voce precisa pesquisar para conseguir uma resposta, as configurações do computador do usuario é '{ConfigPC()}'",
                  temperature:float|int=1,
                  top_p:float|int=0.95,
                  top_k:float|int=0,
@@ -78,12 +89,7 @@ class ApiRequest:
                 "max_output_tokens": max_output_tokens,
         }
         
-        self.__system_instruction:str
-        if system_instruction:
-            self.__system_instruction = system_instruction
-        else:
-            self.__system_instruction = "Você é um Assistente de TI"
-            
+    def start(self):
         MODEL_NAME:str = "gemini-1.5-pro-latest"    
         self.__model:genai.GenerativeModel = genai.GenerativeModel(
             model_name=MODEL_NAME,
@@ -102,15 +108,17 @@ class ApiRequest:
             return f"\nAssistente:\n{response.text}\n"
         except Exception as error:
             if "Resource has been exhausted (e.g. check quota)." in error.args:
-                #sleep(3)
                 return "\n    Muitas perguntas em pouco tempo, espere um pouco e tente novamente!\n "
+            elif "HARM_CATEGORY_HARASSMENT" in str(error.args):
+                return "\n    O Conteudo perguntado não é apropriado\n"
             return f"um erro ocorreu ao tentar utilzar a api motivo: \n{error.args}"
     
 if __name__ == "__main__":
-    from credenciais import Credential
-    crd:dict = Credential("TOKEN_GEMINI").load()
-    bot = ApiRequest(token=crd["password"], system_instruction=f"versão do sistema operacional do meu computador Windows 10.0.19045")
+    pass
+    # from credenciais import Credential
+    # crd:dict = Credential("TOKEN_GEMINI").load()
+    # bot = ApiRequest(token=crd["password"])
     
-    response = bot.question("qual é meu sistema operacional")
-    print(response)
+    # response = bot.question("qual é meu sistema operacional")
+    # print(response)
     

@@ -117,6 +117,13 @@ class ConfigPC:
            return "não identificado" 
 
     @property
+    def rede_info(self) -> str:
+        try:
+            return self.get_network_info()
+        except:
+           return "não identificado" 
+
+    @property
     def lista_programas_instalados(self) -> str|list:
         try:
             return self.get_installed_programs()
@@ -210,14 +217,53 @@ class ConfigPC:
         except Exception as e:
             return "Erro ao obter lista de programas instalados: {}".format(str(e))
 
+    def get_network_info(self) -> str:
+        network_info = {}
+        
+        # Obtém informações de conexão de rede
+        connections = psutil.net_connections()
+        network_info['connections'] = connections
+        
+        # Obtém estatísticas de rede
+        net_io_counters = psutil.net_io_counters()
+        network_info['io_counters'] = net_io_counters
+        
+        # Obtém informações sobre interfaces de rede
+        net_interfaces = psutil.net_if_addrs()
+        network_info['interfaces'] = net_interfaces
+        
 
-
+        return f"""
+            Network Connections: {[conn for conn in network_info['connections']]};
+            \nNetwork I/O Counters:
+            Bytes Sent: {network_info['io_counters'].bytes_sent},
+            Bytes Received: {network_info['io_counters'].bytes_recv};
+            \nNetwork Interfaces: {[[f"Family: {addr.family}, Address: {addr.address}, Netmask: {addr.netmask}, Broadcast: {addr.broadcast}" for addr in interface_addresses]for interface_name, interface_addresses in network_info['interfaces'].items()]}
+            """
+    
     def __str__(self) -> str:
-        return f"Processador: {self.processador}; Uso Processador: {self.processador_usando}; Memoria Ram: {self.ram_total}; Uso Memoria Ram: {self.ram_usando}; Placa de Video: {self.placa_video}; Armazenamento Total: {self.armazenamento_total}; Armazenamento Disponivel: {self.armazenamento_disponivel}; Sistema Operacional: {self.sistema_operacional}; Fabricante Placa Mãe: {self.placa_mae_fabricante}; Modelo Placa Mão: {self.placa_mae_modelo}; Ip WAN: {self.ip_wam}; Ip Lan: {self.ip_lan}; Nome do computador: {self.nome_maquina}, Lista programas em execução: {str(self.lista_programas_em_exec)}; Lista de programas instalados: {str(self.lista_programas_instalados)}"
+        return str(f"""
+                   Processador: {self.processador};\n
+                   Uso Processador: {self.processador_usando};\n
+                   Memoria Ram: {self.ram_total};\n
+                   Uso Memoria Ram: {self.ram_usando};\n
+                   Placa de Video: {self.placa_video};\n
+                   Armazenamento Total: {self.armazenamento_total};\n
+                   Armazenamento Disponivel: {self.armazenamento_disponivel};\n
+                   Sistema Operacional: {self.sistema_operacional};\n
+                   Fabricante Placa Mãe: {self.placa_mae_fabricante};\n
+                   Modelo Placa Mão: {self.placa_mae_modelo};\n
+                   IP WAM: {self.ip_wam};\n
+                   IP LAN: {self.ip_lan};\n
+                   Nome do computador: {self.nome_maquina};\n
+                   Lista programas em execução: {str(self.lista_programas_em_exec)};\n
+                   Lista de programas instalados: {str(self.lista_programas_instalados)};\n
+                   Informaçoes de Rede: {str(self.rede_info)}\n;
+                   """)
 
       
 if __name__ == "__main__":
     bot  = ConfigPC()
     
     print(bot)
-    print(bot.nome_maquina)
+    print(bot.ip_wam)
