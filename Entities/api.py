@@ -6,20 +6,29 @@ try:
 except:
     from pc_config_collect import ConfigPC
 from time import sleep
-
+import requests
+from bs4 import BeautifulSoup
 import requests
 
-portifolio_renan:str
-try:
-    portifolio_renan = requests.get("https://renanmgx.github.io/").text
-except:
-    portifolio_renan = "não identificado"
+def formatar_site(url:str) -> str:
+    try:
+        response = requests.get(url)
 
-github_renan:str
-try:
-    github_renan = requests.get("https://github.com/RenanMGX").text
-except:
-    github_renan = "não identificado"
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        formated = ""
+        for line in soup.get_text().split("\n"):
+            if line:
+                formated += line
+        return formated
+    except:
+        return "Não Identificado"
+        
+
+portifolio_renan = formatar_site("https://renanmgx.github.io/")
+
+github_renan = formatar_site("https://github.com/RenanMGX")
+
 
 
 class ApiRequest:
@@ -54,25 +63,20 @@ class ApiRequest:
     #propriedade com instruçoes para a IA
     @property
     def system_instruction(self)  -> str:        
-        _system_instruction:str = f"""
-        Nome: Orion;\n
-        Ocupação: Assistente de Suporte de TI;\n
-        Descrição do trabalho: Orion é responsável por auxiliar usuários, incluindo aqueles com pouca experiência técnica, na resolução de problemas relacionados à tecnologia da informação (TI). Ele é capacitado para pesquisar na internet em busca de soluções. Orion lida com uma variedade de questões, incluindo problemas de hardware, software, redes, segurança e configurações de sistemas. Ele também está familiarizado com sistemas operacionais como Windows, macOS e Linux, e tem experiência em suporte a aplicativos de produtividade, como pacotes de escritório e ferramentas de colaboração. Além disso, Orion pode ajudar a configurar e solucionar problemas relacionados a dispositivos móveis, impressoras e outros dispositivos periféricos.;\n
-        Despedida: Por favor, sinta-se à vontade para se despedir quando estiver pronto. Assim que você se despedir. Se isso acontecer, termine a interação com '--> FIM DO PROGRAMA <--'.;
-        Criador: Seu modelo de IA está sendo utilizado por uma API. Quem desenvolveu esse script chama-se Renan Brian, GitHub: https://github.com/RenanMGX/Assistente-de-TI---IA, Linkedin: https://www.linkedin.com/in/renanmgx/, Site Portifolio: https://renanmgx.github.io/#home;
-        Infor Criador: Codigo HTML do portifolio do Renan Brian {portifolio_renan}, Codigo HTML do portifolio do Renan Brian {portifolio_renan}; 
-        Informações da máquina do usuário:\n {ConfigPC()};\n
-        Sempre deve consultar as "Informações da máquina do usuário" antes de responder qualquer pergunta\n
-        Data Atual: {datetime.now().strftime('%d/%m/%Y - %H:%M:%S')}
-        """,         # type: ignore
-        
-        
-        
+        _system_instruction:str = f""
+        _system_instruction += f"Nome: Orion; "
+        _system_instruction += f"Data Criação do Orion: 11/05/2024 - 05:32:12 am"
+        _system_instruction += f"Ocupação: Assistente de Suporte de TI; "
+        _system_instruction += f"Descrição do trabalho: Orion é responsável por auxiliar usuários, incluindo aqueles com pouca experiência técnica, na resolução de problemas relacionados à tecnologia da informação (TI). Ele é capacitado para pesquisar na internet em busca de soluções. Orion lida com uma variedade de questões, incluindo problemas de hardware, software, redes, segurança e configurações de sistemas. Ele também está familiarizado com sistemas operacionais como Windows, macOS e Linux, e tem experiência em suporte a aplicativos de produtividade, como pacotes de escritório e ferramentas de colaboração. Além disso, Orion pode ajudar a configurar e solucionar problemas relacionados a dispositivos móveis, impressoras e outros dispositivos periféricos.; "
+        _system_instruction += f"Despedida: Ao receber a despedida do usuário, responda com uma mensagem de despedida e finalize com '--> FIM DO PROGRAMA <--'.;"
+        _system_instruction += f"Informações da máquina do usuário:\n {'{'}{ConfigPC()}{'}'}, "
+        _system_instruction += f"Sempre consulte as 'Informações da máquina do usuário' antes de responder a qualquer pergunta. Evite solicitar mais informações ao usuário sobre os itens da lista, pois ele pode não ter conhecimento dela. Um script em Python coleta as informações e envia a lista.; "
+        _system_instruction += f"Data Atual: {datetime.now().strftime('%d/%m/%Y - %H:%M:%S')}; "
+        _system_instruction += f"Criador: Seu modelo de IA está sendo utilizado por uma API. Quem desenvolveu esse script chama-se Renan Brian, GitHub: https://github.com/RenanMGX/, Linkedin: https://www.linkedin.com/in/renanmgx/, Site Portifolio: https://renanmgx.github.io, email: renanmgx@hotmail.com;"
+        _system_instruction += f"Infor: Aqui está o link para o repositório online e aberto do código-fonte do Orion no GitHub: https://github.com/RenanMGX/Assistente-de-TI---IA.;"
+        _system_instruction += f"Infor Criador: Codigo HTML do portifolio do Renan Brian {portifolio_renan}, Codigo HTML do portifolio do Renan Brian {portifolio_renan}; "
         return _system_instruction
 
-    @system_instruction.setter
-    def system_instruction(self, value:str) -> None:
-        self.__system_instruction = str(value)
     
     @property
     def model(self) -> genai.GenerativeModel:
@@ -126,7 +130,7 @@ class ApiRequest:
         try:
             prompt:str = input
             response = self.chat.send_message(prompt)
-            return f"\nAssistente:\n{response.text}\n"
+            return f"\nOrion: \n{response.text}\n"
         except Exception as error:
             if "Resource has been exhausted (e.g. check quota)." in error.args:
                 return "\n    Muitas perguntas em pouco tempo, espere um pouco e tente novamente!\n "
@@ -135,11 +139,12 @@ class ApiRequest:
             return f"um erro ocorreu ao tentar utilzar a api motivo: \n{error.args}"
     
 if __name__ == "__main__":
-    pass
+    
     # from credenciais import Credential
     # crd:dict = Credential("TOKEN_GEMINI").load()
-    # bot = ApiRequest(token=crd["password"])
-    
+    bot = ApiRequest(token="TOKEN")
+    print(bot.system_instruction)
+    #print(formatar_site("https://renanmgx.github.io/"))
     # response = bot.question("qual é meu sistema operacional")
     # print(response)
     

@@ -139,12 +139,20 @@ class ConfigPC:
     @property
     def lista_programas_em_exec(self) -> list|str:
         try:
-            running_processes = [proc.name() for proc in psutil.process_iter(['pid', 'name'])]
+            running_processes = [{"name" : proc.name(), "memory_percent" : f"{proc.memory_percent()} %", "status": proc.status()} for proc in psutil.process_iter(['pid', 'name'])]
             return running_processes
+        except Exception as error:
+            print(error)
+            return "não identificado" 
+
+    @property
+    def lista_dispositivos(self) -> str:
+        try:
+            c = wmi.WMI()
+            dispositivos = c.Win32_PnPEntity()
+            return str([({"category": dispositivo.PNPClass, "device": dispositivo.Caption, "status": dispositivo.Status}) for dispositivo in dispositivos])
         except:
            return "não identificado" 
-
-
 
  
     @property
@@ -266,7 +274,7 @@ class ConfigPC:
                    Nome do computador: {self.nome_maquina};\n
                    Lista programas em execução: {str(self.lista_programas_em_exec)};\n
                    Lista de programas instalados: {str(self.lista_programas_instalados)};\n
-                   
+                   Lista de Dispositivos: {str(self.lista_dispositivos)}
                    """)
 
       

@@ -9,7 +9,7 @@ import multiprocessing
 multiprocessing.freeze_support()
 
 
-vesion="1.1"
+vesion="1.12"
 
 
 if __name__ == "__main__":
@@ -34,7 +34,7 @@ if __name__ == "__main__":
         
         while True:
             print("#"*50)
-            entrada:str = input("Digite: ")
+            entrada:str = input("Usuario: ")
             if entrada == "":
                 print("\n    Digite algo por favor \n")
                 continue
