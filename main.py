@@ -8,7 +8,7 @@ sys.path.append("Entities")
 import multiprocessing
 multiprocessing.freeze_support()
 
-vesion="1.12"
+vesion="1.13"
 
 if __name__ == "__main__":
     try:

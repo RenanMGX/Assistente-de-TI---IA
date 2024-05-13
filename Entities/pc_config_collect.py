@@ -77,10 +77,29 @@ class ConfigPC:
         try:
             sistema_operacional = platform.system()
             versao_sistema = str(platform.version())
-            return str((sistema_operacional + " " + versao_sistema))
+            if sistema_operacional == "Windows":
+                if "10.0.22000" <= versao_sistema:
+                    versao_sistema = versao_sistema.replace("10.0", "11.0")  
+                sistema_operacional += f" {versao_sistema.split('.')[0]}"
+            return str((sistema_operacional + " Version " + versao_sistema))
         except:
            return "não identificado" 
 
+    @property
+    def tipo_maquina(self):
+        try:
+            bateria = False
+            c = wmi.WMI()
+            for bateria in c.Win32_Battery():
+                print(bateria.BatteryStatus)
+                if bateria.BatteryStatus != 0:
+                    bateria = True  
+                    
+            return "Notebook" if bateria else "Computador"
+            
+        except:
+            return "não identificado" 
+            
     @property
     def placa_mae_fabricante(self) -> str:
         try:
@@ -276,6 +295,7 @@ class ConfigPC:
                    Armazenamento Disponivel: {self.armazenamento_disponivel};\n
                    Sistema Operacional: {self.sistema_operacional};\n
                    Fabricante Placa Mãe: {self.placa_mae_fabricante};\n
+                   Tipo: {self.tipo_maquina}\n
                    Modelo Placa Mão: {self.placa_mae_modelo};\n
                    IP WAM: {self.ip_wam};\n
                    IP LAN: {self.ip_lan};\n
@@ -289,5 +309,5 @@ class ConfigPC:
 if __name__ == "__main__":
     bot  = ConfigPC()
     
-    print(bot)
+    print(bot.tipo_maquina)
     #print(bot.placa_video)
