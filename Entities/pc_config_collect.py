@@ -59,11 +59,17 @@ class ConfigPC:
     
     @property
     def armazenamento_total(self) -> str:
-        return self.space()["total"]
+        try:
+            return self.space()["total"]
+        except:
+            return "não identificado"
     
     @property
     def armazenamento_disponivel(self) -> str:
-        return self.space()["disponivel"]
+        try:
+            return self.space()["disponivel"]
+        except:
+            return "não identificado"
 
     @property
     def sistema_operacional(self) -> str:
@@ -260,12 +266,12 @@ class ConfigPC:
                    Nome do computador: {self.nome_maquina};\n
                    Lista programas em execução: {str(self.lista_programas_em_exec)};\n
                    Lista de programas instalados: {str(self.lista_programas_instalados)};\n
-                   Informaçoes de Rede: {str(self.rede_info)}\n;
+                   
                    """)
 
       
 if __name__ == "__main__":
     bot  = ConfigPC()
     
-    #print(bot)
-    print(bot.placa_video)
+    print(bot)
+    #print(bot.placa_video)

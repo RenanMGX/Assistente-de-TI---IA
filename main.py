@@ -9,7 +9,7 @@ import multiprocessing
 multiprocessing.freeze_support()
 
 
-vesion="1.0"
+vesion="1.1"
 
 
 if __name__ == "__main__":
@@ -23,9 +23,12 @@ if __name__ == "__main__":
             print("token registrado!")
             crd = token.load()        
         
+        
+        
         print(f"Iniciando Programa versão {vesion}...")
         bot = ApiRequest(token=crd)
         bot.start()
+        
         print("#"*50)
         print(bot.question("Apresente-se para o usuário sem fornecer informações sobre a máquina, e compartilhe uma interessante sobre um assunto atual."))
         
