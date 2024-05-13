@@ -5,6 +5,7 @@ import platform
 import socket
 import requests
 import winreg
+import getpass
 
 
 class ConfigPC:
@@ -113,6 +114,13 @@ class ConfigPC:
             return self.get_lan_ip()
         except:
            return "não identificado" 
+
+    @property
+    def nome_usuario(self) -> str:
+        try:
+            return getpass.getuser()
+        except:
+            return "não identificado"
 
     @property
     def nome_maquina(self) -> str:

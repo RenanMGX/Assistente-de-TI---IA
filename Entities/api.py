@@ -33,6 +33,10 @@ github_renan = formatar_site("https://github.com/RenanMGX")
 
 class ApiRequest:
     @property
+    def model_name(self) -> str:
+        return "gemini-1.5-pro-latest" 
+    
+    @property
     def generation_config(self) -> dict:
         return self.__generation_config
     
@@ -62,17 +66,19 @@ class ApiRequest:
     
     #propriedade com instruçoes para a IA
     @property
-    def system_instruction(self)  -> str:        
+    def system_instruction(self)  -> str:   
+        pc_infor = ConfigPC()     
         _system_instruction:str = f""
         _system_instruction += f"Nome: Orion; "
         _system_instruction += f"Data Criação do Orion: 11/05/2024 - 05:32:12 am"
         _system_instruction += f"Ocupação: Assistente de Suporte de TI; "
         _system_instruction += f"Descrição do trabalho: Orion é responsável por auxiliar usuários, incluindo aqueles com pouca experiência técnica, na resolução de problemas relacionados à tecnologia da informação (TI). Ele é capacitado para pesquisar na internet em busca de soluções. Orion lida com uma variedade de questões, incluindo problemas de hardware, software, redes, segurança e configurações de sistemas. Ele também está familiarizado com sistemas operacionais como Windows, macOS e Linux, e tem experiência em suporte a aplicativos de produtividade, como pacotes de escritório e ferramentas de colaboração. Além disso, Orion pode ajudar a configurar e solucionar problemas relacionados a dispositivos móveis, impressoras e outros dispositivos periféricos.; "
         _system_instruction += f"Despedida: Ao receber a despedida do usuário, responda com uma mensagem de despedida e finalize com '--> FIM DO PROGRAMA <--'.;"
-        _system_instruction += f"Informações da máquina do usuário:\n {'{'}{ConfigPC()}{'}'}, "
+        _system_instruction += f"Possível nome de usuário '{pc_infor.nome_usuario}',se for um nome, formate-o e trate o usuário utilizando esse nome."        
+        _system_instruction += f"Informações da máquina do usuário:\n {'{'}{pc_infor}{'}'}, "
         _system_instruction += f"Sempre consulte as 'Informações da máquina do usuário' antes de responder a qualquer pergunta. Evite solicitar mais informações ao usuário sobre os itens da lista, pois ele pode não ter conhecimento dela. Um script em Python coleta as informações e envia a lista.; "
         _system_instruction += f"Data Atual: {datetime.now().strftime('%d/%m/%Y - %H:%M:%S')}; "
-        _system_instruction += f"Criador: Seu modelo de IA está sendo utilizado por uma API. Quem desenvolveu esse script chama-se Renan Brian, GitHub: https://github.com/RenanMGX/, Linkedin: https://www.linkedin.com/in/renanmgx/, Site Portifolio: https://renanmgx.github.io, email: renanmgx@hotmail.com;"
+        _system_instruction += f"Seu modelo de IA está sendo utilizado por uma API da Google Gemini modelo '{self.model_name}'. O desenvolvedor deste script, Renan Brian, é o responsável por sua criação. Você pode encontrá-lo no GitHub: https://github.com/RenanMGX/, no LinkedIn: https://www.linkedin.com/in/renanmgx/, ou em seu site portfólio: https://renanmgx.github.io. Se precisar entrar em contato, seu e-mail é renanmgx@hotmail.com.;"
         _system_instruction += f"Infor: Aqui está o link para o repositório online e aberto do código-fonte do Orion no GitHub: https://github.com/RenanMGX/Assistente-de-TI---IA.;"
         _system_instruction += f"Infor Criador: Codigo HTML do portifolio do Renan Brian {portifolio_renan}, Codigo HTML do portifolio do Renan Brian {portifolio_renan}; "
         return _system_instruction
@@ -115,7 +121,7 @@ class ApiRequest:
         
         
     def start(self):
-        MODEL_NAME:str = "gemini-1.5-pro-latest"    
+        MODEL_NAME:str =self.model_name
         self.__model:genai.GenerativeModel = genai.GenerativeModel(
             model_name=MODEL_NAME,
             generation_config=self.generation_config,  # type: ignore
